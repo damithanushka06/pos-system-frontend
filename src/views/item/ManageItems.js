@@ -34,7 +34,7 @@ const ManageItems = () => {
 
     const fetchItems = async () => {
         try {
-            const response = await axios.get("http://localhost:8081/item/get_all_items");
+            const response = await axios.get("http://localhost:8080/get_all_item");
             setItems(response.data);
         } catch (error) {
             console.error("Error fetching items", error);
@@ -50,7 +50,7 @@ const ManageItems = () => {
                 categoryId: itemCategoryId,
             };
 
-            await axios.post("http://localhost:8081/item/create_item", newItem);
+            await axios.post("http://localhost:8080/create_item", newItem);
             setItemName("");
             setItemPrice("");
             setItemQty("");
@@ -70,7 +70,7 @@ const ManageItems = () => {
                 categoryId: itemCategoryId,
             };
 
-            await axios.put(`http://localhost:8081/item/edit_item/${selectedItemId}`, updatedItem);
+            await axios.put(`http://localhost:8080/update_item/${selectedItemId}`, updatedItem);
             setItemName("");
             setItemPrice("");
             setItemQty("");
@@ -84,7 +84,7 @@ const ManageItems = () => {
 
     const handleDeleteItem = async () => {
         try {
-            await axios.delete(`http://localhost:8081/item/delete_item/${selectedItemId}`);
+            await axios.delete(`http://localhost:8080/delete_item/${selectedItemId}`);
             setIsDeleteDialogOpen(false);
             fetchItems(); // Refresh the list after deleting an item
             setSelectedItemId(null);
@@ -97,7 +97,7 @@ const ManageItems = () => {
         setItemName(item.name);
         setItemPrice(item.price);
         setItemQty(item.qty);
-        setItemCategoryId(item.categoryId);
+        setItemCategoryId(item.itemCategory.id);
         setSelectedItemId(item.id);
     };
 
@@ -183,7 +183,7 @@ const ManageItems = () => {
                             <ListItem key={item.id}>
                                 <ListItemText
                                     primary={item.name}
-                                    secondary={`Price: ${item.price}, Quantity: ${item.qty}, Category ID: ${item.categoryId}`}
+                                    secondary={`Price: ${item.price}, Quantity: ${item.qty}, Category ID: ${item.itemCategory.id}`}
                                 />
                                 <ListItemSecondaryAction>
                                     <IconButton

@@ -54,11 +54,11 @@ const ManageCategories = () => {
 
     const handleUpdateCategory = async () => {
         try {
-            const updatedCategory = {
+            const itemCategory = {
                 name: categoryName,
             };
 
-            await axios.put(`http://localhost:8080/update_category/`, updatedCategory);
+            await axios.put(`http://localhost:8080/update_category/${selectedCategoryId}`, itemCategory);
             setCategoryName("");
             fetchCategories(); // Refresh the list after updating a category
             setSelectedCategoryId(null);
