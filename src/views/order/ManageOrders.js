@@ -60,6 +60,7 @@ const ManageOrders = () => {
         setTax((total / 100) * 15);
     }, [total]);
 
+
     const handleAddToOrder = (item) => {
         setOrderItems([...orderItems, item]);
         setTotal((prevTotal) => prevTotal + item.price);
@@ -81,6 +82,7 @@ const ManageOrders = () => {
                 const updatedOrders = await axios.get("http://localhost:8080/get_all_orders");
                 setOrders(updatedOrders.data);
             } else {
+                window.alert(response.data.errorMessage);
                 // show error message
             }
         } catch (error) {
@@ -98,17 +100,35 @@ const ManageOrders = () => {
         setIsOrderDetailsDialogOpen(false);
     };
 
+   async function  getUpdatedOrderList():any{
+        const updatedOrders = await axios.get("http://localhost:8080/get_all_orders");
+        setOrders(updatedOrders.data);
+        setIsOrderDetailsDialogOpen(false);
+    }
+
     const handleUpdateOrder = async (order) => {
         try {
             const response = await axios.post("http://localhost:8080/update_order", order);
+            if (response.status === 200) {
+                window.alert("Order Updated Successfully");
+                getUpdatedOrderList();
+
+            } else {
+                window.alert(response.data)
+            }
         } catch (error) {
             console.error("Error completing order", error);
         }
     };
 
-    const handleDeleteOrder = (order) => {
-        // Implement logic for deleting orders
-        console.log(`Deleting order with ID: ${order.id}`);
+    const handleDeleteOrder = async (order) => {
+       const response = await axios.delete("http://localhost:8080/delete_order", {params: {id: order.id}});
+       if(response.status === 200){
+           window.alert("Order Deleted Successfully");
+           getUpdatedOrderList();
+       } else {
+           window.alert(response.data);
+       }
     };
 
     const handleUpdateQuantity = (item, newQuantity) => {
@@ -116,7 +136,7 @@ const ManageOrders = () => {
         const itemIndex = selectedOrder.items.findIndex((i) => i.id === item.id);
 
         // Create a copy of the item with updated quantity
-        const updatedItem = { ...selectedOrder.items[itemIndex], qty: newQuantity };
+        const updatedItem = {...selectedOrder.items[itemIndex], qty: newQuantity};
 
         // Create a new array with the updated item
         const updatedItems = [
@@ -265,10 +285,14 @@ const ManageOrders = () => {
                         <>
                             <Grid container spacing={2}>
                                 <Grid item xs={12}>
-                                    <Typography paragraph style={{ display: 'flex', alignItems: 'center' }}>
-                                        <span style={{ color: 'black', fontWeight: 'bold', marginRight: '8px' }}>Order ID:</span> {selectedOrder.id}
-                                        <span style={{ color: 'black', fontWeight: 'bold', margin: '0 8px' }}>Total Amount:</span> {selectedOrder.total}
-                                        <span style={{ color: 'black', fontWeight: 'bold', marginLeft: '8px' }}>Created On:</span> {format(selectedOrder.orderTime, 'yyyy-MM-dd')}
+                                    <Typography paragraph style={{display: 'flex', alignItems: 'center'}}>
+                                        <span style={{
+                                            color: 'black',
+                                            fontWeight: 'bold',
+                                            marginRight: '8px'
+                                        }}>Order ID:</span> {selectedOrder.id}
+                                        <span style={{color: 'black', fontWeight: 'bold', margin: '0 8px'}}>Total Amount:</span> {selectedOrder.total}
+                                        <span style={{color: 'black', fontWeight: 'bold', marginLeft: '8px'}}>Created On:</span> {format(selectedOrder.orderTime, 'yyyy-MM-dd')}
                                     </Typography>
                                 </Grid>
                             </Grid>
@@ -294,7 +318,7 @@ const ManageOrders = () => {
                                                         size="small"
                                                         value={item.qty}
                                                         onChange={(e) => handleUpdateQuantity(item, e.target.value)}
-                                                        style={{ width: '100px' }}
+                                                        style={{width: '100px'}}
                                                     />
                                                 </TableCell>
 
