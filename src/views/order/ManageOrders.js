@@ -1,11 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, {useEffect, useState} from "react";
 import axios from "axios";
 import format from 'date-fns/format';
 import {
+    Button,
     Card,
     CardContent,
-    Typography,
-    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Fab,
     Grid,
     Table,
     TableBody,
@@ -13,11 +17,11 @@ import {
     TableContainer,
     TableHead,
     TableRow,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
+    TextField,
+    Tooltip,
+    Typography,
 } from "@mui/material";
+import {Delete, ViewAgenda} from "@mui/icons-material";
 
 const ManageOrders = () => {
     const [items, setItems] = useState([]);
@@ -27,6 +31,7 @@ const ManageOrders = () => {
     const [orders, setOrders] = useState([]);
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [isOrderDetailsDialogOpen, setIsOrderDetailsDialogOpen] = useState(false);
+    const [isFromEditAction, setIsFromEditAction] = useState(false);
 
     useEffect(() => {
         const getItems = async () => {
@@ -83,12 +88,6 @@ const ManageOrders = () => {
         }
     };
 
-    const handleRemoveItemFromOrder = (itemToRemove) => {
-        const updatedOrderItems = orderItems.filter(item => item.id !== itemToRemove.id);
-        setOrderItems(updatedOrderItems);
-        setTotal(prevTotal => prevTotal - itemToRemove.price);
-    };
-
     const handleOrderDetailsClick = (order) => {
         setSelectedOrder(order);
         setIsOrderDetailsDialogOpen(true);
@@ -99,11 +98,46 @@ const ManageOrders = () => {
         setIsOrderDetailsDialogOpen(false);
     };
 
+    const handleUpdateOrder = async (order) => {
+        try {
+            const response = await axios.post("http://localhost:8080/update_order", order);
+        } catch (error) {
+            console.error("Error completing order", error);
+        }
+    };
+
+    const handleDeleteOrder = (order) => {
+        // Implement logic for deleting orders
+        console.log(`Deleting order with ID: ${order.id}`);
+    };
+
+    const handleUpdateQuantity = (item, newQuantity) => {
+        // Find the index of the item in the array
+        const itemIndex = selectedOrder.items.findIndex((i) => i.id === item.id);
+
+        // Create a copy of the item with updated quantity
+        const updatedItem = { ...selectedOrder.items[itemIndex], qty: newQuantity };
+
+        // Create a new array with the updated item
+        const updatedItems = [
+            ...selectedOrder.items.slice(0, itemIndex),
+            updatedItem,
+            ...selectedOrder.items.slice(itemIndex + 1),
+        ];
+
+        // Update the selectedOrder with the new items array
+        setSelectedOrder((prevOrder) => ({
+            ...prevOrder,
+            items: updatedItems,
+        }));
+    };
+
+
     return (
-        <div style={{ padding: 20 }}>
+        <div style={{padding: 20}}>
             <Grid container spacing={2}>
                 <Grid item xs={12} md={6}>
-                    <Card style={{ minHeight: 281, maxHeight: 281, overflow: 'auto' }}>
+                    <Card style={{minHeight: 281, maxHeight: 281, overflow: 'auto'}}>
                         <CardContent>
                             <Typography variant="h4">Items</Typography>
                             {items.map((item) => (
@@ -121,7 +155,7 @@ const ManageOrders = () => {
                     </Card>
                 </Grid>
                 <Grid item xs={12} md={6}>
-                    <Card style={{ minHeight: 281, maxHeight: 281, overflow: 'auto' }}>
+                    <Card style={{minHeight: 281, maxHeight: 281, overflow: 'auto'}}>
                         <CardContent>
                             <Typography variant="h4">Order Summary</Typography>
                             <TableContainer>
@@ -186,13 +220,28 @@ const ManageOrders = () => {
                                                 <TableCell>{format(order.orderTime, 'yyyy-MM-dd')}</TableCell>
                                                 <TableCell>{order.status}</TableCell>
                                                 <TableCell>
-                                                    <Button
-                                                        variant="outlined"
-                                                        color="primary"
-                                                        onClick={() => handleOrderDetailsClick(order)}
-                                                    >
-                                                        View Details
-                                                    </Button>
+                                                    <Tooltip title="View Item(s)">
+                                                        <Fab sx={{marginRight: 2}}
+                                                             size="small"
+                                                             color="secondary"
+                                                             onClick={() => handleOrderDetailsClick(order, setIsFromEditAction(false))}
+                                                        >
+                                                            <ViewAgenda/>
+                                                        </Fab>
+                                                    </Tooltip>
+                                                    {order.status === "Pending" && (
+                                                        <>
+                                                            <Tooltip title="Delete">
+                                                                <Fab
+                                                                    size="small"
+                                                                    color="error"
+                                                                    onClick={() => handleDeleteOrder(order)}
+                                                                >
+                                                                    <Delete/>
+                                                                </Fab>
+                                                            </Tooltip>
+                                                        </>
+                                                    )}
                                                 </TableCell>
                                             </TableRow>
                                         ))}
@@ -216,35 +265,61 @@ const ManageOrders = () => {
                         <>
                             <Grid container spacing={2}>
                                 <Grid item xs={12}>
-                                    <Typography>Order ID: {selectedOrder.id}</Typography>
-                                    <Typography>Total Amount: {selectedOrder.total}</Typography>
-                                    <Typography>Created On: {format(selectedOrder.orderTime, 'yyyy-MM-dd')}</Typography>
+                                    <Typography paragraph style={{ display: 'flex', alignItems: 'center' }}>
+                                        <span style={{ color: 'black', fontWeight: 'bold', marginRight: '8px' }}>Order ID:</span> {selectedOrder.id}
+                                        <span style={{ color: 'black', fontWeight: 'bold', margin: '0 8px' }}>Total Amount:</span> {selectedOrder.total}
+                                        <span style={{ color: 'black', fontWeight: 'bold', marginLeft: '8px' }}>Created On:</span> {format(selectedOrder.orderTime, 'yyyy-MM-dd')}
+                                    </Typography>
                                 </Grid>
                             </Grid>
 
-                            {/* Display items in the order */}
                             <Typography variant="h6">Order Items:</Typography>
-                            <ol>
-                                {selectedOrder.items.map(item => (
-                                    <li key={item.id}>{item.name} - {item.price}</li>
-                                ))}
-                            </ol>
+                            <TableContainer>
+                                <Table>
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell>Item Name</TableCell>
+                                            <TableCell>Price</TableCell>
+                                            <TableCell>Quantity</TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {selectedOrder.items.map((item) => (
+                                            <TableRow key={item.id}>
+                                                <TableCell>{item.name}</TableCell>
+                                                <TableCell>{item.price}</TableCell>
+                                                <TableCell>
+                                                    <TextField
+                                                        variant="outlined"
+                                                        size="small"
+                                                        value={item.qty}
+                                                        onChange={(e) => handleUpdateQuantity(item, e.target.value)}
+                                                        style={{ width: '100px' }}
+                                                    />
+                                                </TableCell>
 
-                            {/* Button to remove items from the order */}
-                            <Button
-                                variant="outlined"
-                                color="secondary"
-                                onClick={() => handleRemoveItemFromOrder(selectedOrder)}
-                            >
-                                Remove Items from Order
-                            </Button>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
 
-                            {/* Add more details here based on your order structure */}
                         </>
                     )}
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCloseOrderDetailsDialog}>Close</Button>
+                    <Button
+                        className="btn btn-sm btn-outline"
+                        onClick={() => handleUpdateOrder(selectedOrder)}
+                    >
+                        Update Order
+                    </Button>
+                    <Button
+                        className="btn btn-sm btn-outline"
+                        onClick={handleCloseOrderDetailsDialog}
+                    >
+                        Close
+                    </Button>
                 </DialogActions>
             </Dialog>
 
