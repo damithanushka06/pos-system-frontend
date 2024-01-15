@@ -46,9 +46,15 @@ const ManageCategories = () => {
                 name: categoryName,
             };
 
-            await axios.post("http://localhost:8080/create_category", newCategory);
-            setCategoryName("");
-            fetchCategories(); // Refresh the list after creating a new category
+            const response =    await axios.post("http://localhost:8080/create_category", newCategory);
+            if(response.status === 201){
+                window.alert("Category Created Successfully");
+                setCategoryName("");
+                fetchCategories(); // Refresh the list after creating a new category
+            } else {
+                window.alert(response.data);
+            }
+
         } catch (error) {
             console.error("Error creating category", error);
         }

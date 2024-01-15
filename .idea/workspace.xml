@@ -5,11 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="152b9dfe-2a6a-446d-b388-23765686aa1a" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/utils/Common.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/views/category/ManageCategoryies.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/category/ManageCategoryies.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/views/item/ManageItems.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/item/ManageItems.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/views/order/ManageOrders.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/views/order/ManageOrders.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -81,7 +78,7 @@
       <option name="presentableId" value="Default" />
       <updated>1705223498405</updated>
       <workItem from="1705223499559" duration="24025000" />
-      <workItem from="1705302700706" duration="6619000" />
+      <workItem from="1705302700706" duration="6888000" />
     </task>
     <servers />
   </component>
