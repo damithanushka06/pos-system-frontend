@@ -96,7 +96,7 @@ const ManageCategories = () => {
         <div style={{ padding: 20 }}>
             <Card style={{ marginBottom: 20 }}>
                 <CardContent>
-                    <Typography variant="h4">Create/Update Category</Typography>
+                    <Typography variant="h4" pb={2}>Create/Update Category</Typography>
                     <Grid container spacing={2}>
                         <Grid item xs={12} sm={6}>
                             <TextField

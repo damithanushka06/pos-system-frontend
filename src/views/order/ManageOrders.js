@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import format from 'date-fns/format';
 import {
     Card,
     CardContent,
@@ -102,7 +103,7 @@ const ManageOrders = () => {
         <div style={{ padding: 20 }}>
             <Grid container spacing={2}>
                 <Grid item xs={12} md={6}>
-                    <Card>
+                    <Card style={{ minHeight: 281, maxHeight: 281, overflow: 'auto' }}>
                         <CardContent>
                             <Typography variant="h4">Items</Typography>
                             {items.map((item) => (
@@ -120,7 +121,7 @@ const ManageOrders = () => {
                     </Card>
                 </Grid>
                 <Grid item xs={12} md={6}>
-                    <Card>
+                    <Card style={{ minHeight: 281, maxHeight: 281, overflow: 'auto' }}>
                         <CardContent>
                             <Typography variant="h4">Order Summary</Typography>
                             <TableContainer>
@@ -170,6 +171,9 @@ const ManageOrders = () => {
                                         <TableRow>
                                             <TableCell>Order ID</TableCell>
                                             <TableCell>Total Amount</TableCell>
+                                            <TableCell>Tax Amount</TableCell>
+                                            <TableCell>Created On</TableCell>
+                                            <TableCell>Status</TableCell>
                                             <TableCell>Actions</TableCell>
                                         </TableRow>
                                     </TableHead>
@@ -177,7 +181,10 @@ const ManageOrders = () => {
                                         {orders.map((order) => (
                                             <TableRow key={order.id}>
                                                 <TableCell>{order.id}</TableCell>
-                                                <TableCell>{order.totalAmount}</TableCell>
+                                                <TableCell>{order.total}</TableCell>
+                                                <TableCell>{order.tax}</TableCell>
+                                                <TableCell>{format(order.orderTime, 'yyyy-MM-dd')}</TableCell>
+                                                <TableCell>{order.status}</TableCell>
                                                 <TableCell>
                                                     <Button
                                                         variant="outlined"
@@ -207,16 +214,21 @@ const ManageOrders = () => {
                 <DialogContent>
                     {selectedOrder && (
                         <>
-                            <Typography>Order ID: {selectedOrder.id}</Typography>
-                            <Typography>Total Amount: {selectedOrder.totalAmount}</Typography>
+                            <Grid container spacing={2}>
+                                <Grid item xs={12}>
+                                    <Typography>Order ID: {selectedOrder.id}</Typography>
+                                    <Typography>Total Amount: {selectedOrder.total}</Typography>
+                                    <Typography>Created On: {format(selectedOrder.orderTime, 'yyyy-MM-dd')}</Typography>
+                                </Grid>
+                            </Grid>
 
                             {/* Display items in the order */}
                             <Typography variant="h6">Order Items:</Typography>
-                            <ul>
+                            <ol>
                                 {selectedOrder.items.map(item => (
                                     <li key={item.id}>{item.name} - {item.price}</li>
                                 ))}
-                            </ul>
+                            </ol>
 
                             {/* Button to remove items from the order */}
                             <Button

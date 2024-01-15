@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+
 import {
     Card,
     CardContent,
@@ -15,9 +16,9 @@ import {
     Dialog,
     DialogTitle,
     DialogContent,
-    DialogActions,
+    DialogActions, CardActions, Select, MenuItem, InputLabel, FormControl,
 } from "@mui/material";
-import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
+import {Edit as EditIcon, Delete as DeleteIcon, ArrowBack} from "@mui/icons-material";
 
 const ManageItems = () => {
     const [itemName, setItemName] = useState("");
@@ -25,12 +26,23 @@ const ManageItems = () => {
     const [itemQty, setItemQty] = useState("");
     const [itemCategoryId, setItemCategoryId] = useState("");
     const [items, setItems] = useState([]);
+    const [categoryList, setCategoryList] = useState([]);
     const [selectedItemId, setSelectedItemId] = useState(null);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
     useEffect(() => {
         fetchItems();
+        fetchCategoryList();
     }, []);
+
+    const fetchCategoryList = async () => {
+        try {
+            const response = await axios.get("http://localhost:8080/get_category_list");
+            setCategoryList(response.data);
+        } catch (error) {
+            console.error("Error fetching category list", error);
+        }
+    };
 
     const fetchItems = async () => {
         try {
@@ -110,11 +122,18 @@ const ManageItems = () => {
         setIsDeleteDialogOpen(false);
     };
 
+    function goBackToHome() {
+
+    }
+
     return (
         <div style={{ padding: 20 }}>
             <Card style={{ marginBottom: 20 }}>
                 <CardContent>
-                    <Typography variant="h4">Create/Update Item</Typography>
+                    <Typography variant="h4" pb={2}>Create/Update Item <IconButton edge={'end'} aria-label="Go Back" onClick={goBackToHome()}>
+                        <ArrowBack />
+                    </IconButton></Typography>
+
                     <Grid container spacing={2}>
                         <Grid item xs={12} sm={6}>
                             <TextField
@@ -144,13 +163,22 @@ const ManageItems = () => {
                             />
                         </Grid>
                         <Grid item xs={12} sm={6}>
-                            <TextField
-                                fullWidth
-                                label="Category ID"
-                                variant="outlined"
-                                value={itemCategoryId}
-                                onChange={(e) => setItemCategoryId(e.target.value)}
-                            />
+                            <FormControl fullWidth variant="outlined">
+                                <InputLabel id="category-label">Category</InputLabel>
+                                <Select
+                                    label="Category"
+                                    labelId="category-label"
+                                    id="category"
+                                    value={itemCategoryId}
+                                    onChange={(e) => setItemCategoryId(e.target.value)}
+                                >
+                                    {categoryList.map((category) => (
+                                        <MenuItem key={category.id} value={category.id}>
+                                            {category.name}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
                         </Grid>
                         <Grid item xs={12}>
                             {selectedItemId ? (
@@ -173,6 +201,7 @@ const ManageItems = () => {
                         </Grid>
                     </Grid>
                 </CardContent>
+
             </Card>
 
             <Card>
