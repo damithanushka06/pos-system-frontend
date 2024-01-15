@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-
+import {useCommon} from "../../utils/Common";
 import {
     Card,
     CardContent,
@@ -16,9 +16,10 @@ import {
     Dialog,
     DialogTitle,
     DialogContent,
-    DialogActions, CardActions, Select, MenuItem, InputLabel, FormControl,
+    DialogActions, CardActions, Select, MenuItem, InputLabel, FormControl, CardHeader,
 } from "@mui/material";
 import {Edit as EditIcon, Delete as DeleteIcon, ArrowBack} from "@mui/icons-material";
+
 
 const ManageItems = () => {
     const [itemName, setItemName] = useState("");
@@ -29,6 +30,8 @@ const ManageItems = () => {
     const [categoryList, setCategoryList] = useState([]);
     const [selectedItemId, setSelectedItemId] = useState(null);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    const { goBackToHome } = useCommon();
+
 
     useEffect(() => {
         fetchItems();
@@ -122,18 +125,24 @@ const ManageItems = () => {
         setIsDeleteDialogOpen(false);
     };
 
-    function goBackToHome() {
-
-    }
-
     return (
         <div style={{ padding: 20 }}>
+            <IconButton
+                edge="end"
+                aria-label="Go Back"
+                onClick={goBackToHome}
+            >
+                <ArrowBack />
+            </IconButton>
             <Card style={{ marginBottom: 20 }}>
+                <CardHeader
+                    title={
+                        <Typography variant="h4">
+                            Create/Update Item
+                        </Typography>
+                    }
+                />
                 <CardContent>
-                    <Typography variant="h4" pb={2}>Create/Update Item <IconButton edge={'end'} aria-label="Go Back" onClick={goBackToHome()}>
-                        <ArrowBack />
-                    </IconButton></Typography>
-
                     <Grid container spacing={2}>
                         <Grid item xs={12} sm={6}>
                             <TextField

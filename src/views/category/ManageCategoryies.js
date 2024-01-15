@@ -17,13 +17,15 @@ import {
     DialogContent,
     DialogActions,
 } from "@mui/material";
-import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
+import {Edit as EditIcon, Delete as DeleteIcon, ArrowBack} from "@mui/icons-material";
+import {useCommon} from "../../utils/Common";
 
 const ManageCategories = () => {
     const [categoryName, setCategoryName] = useState("");
     const [categories, setCategories] = useState([]);
     const [selectedCategoryId, setSelectedCategoryId] = useState(null);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    const { goBackToHome } = useCommon();
 
     useEffect(() => {
         fetchCategories();
@@ -94,6 +96,13 @@ const ManageCategories = () => {
 
     return (
         <div style={{ padding: 20 }}>
+            <IconButton
+                edge="end"
+                aria-label="Go Back"
+                onClick={goBackToHome}
+            >
+                <ArrowBack />
+            </IconButton>
             <Card style={{ marginBottom: 20 }}>
                 <CardContent>
                     <Typography variant="h4" pb={2}>Create/Update Category</Typography>

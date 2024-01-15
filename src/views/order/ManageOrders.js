@@ -10,7 +10,7 @@ import {
     DialogContent,
     DialogTitle,
     Fab,
-    Grid,
+    Grid, IconButton,
     Table,
     TableBody,
     TableCell,
@@ -21,7 +21,8 @@ import {
     Tooltip,
     Typography,
 } from "@mui/material";
-import {Delete, ViewAgenda} from "@mui/icons-material";
+import {ArrowBack, Delete, ViewAgenda} from "@mui/icons-material";
+import {useCommon} from "../../utils/Common";
 
 const ManageOrders = () => {
     const [items, setItems] = useState([]);
@@ -32,6 +33,7 @@ const ManageOrders = () => {
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [isOrderDetailsDialogOpen, setIsOrderDetailsDialogOpen] = useState(false);
     const [isFromEditAction, setIsFromEditAction] = useState(false);
+    const { goBackToHome } = useCommon();
 
     useEffect(() => {
         const getItems = async () => {
@@ -155,6 +157,13 @@ const ManageOrders = () => {
 
     return (
         <div style={{padding: 20}}>
+            <IconButton
+                edge="end"
+                aria-label="Go Back"
+                onClick={goBackToHome}
+            >
+                <ArrowBack />
+            </IconButton>
             <Grid container spacing={2}>
                 <Grid item xs={12} md={6}>
                     <Card style={{minHeight: 281, maxHeight: 281, overflow: 'auto'}}>
@@ -216,7 +225,7 @@ const ManageOrders = () => {
                     </Card>
                 </Grid>
                 <Grid item xs={12}>
-                    <Card>
+                    <Card style={{minHeight: 434, maxHeight: 434, overflow: 'auto'}}>
                         <CardContent>
                             <Typography variant="h4">Orders</Typography>
                             <TableContainer>
